@@ -27,9 +27,15 @@ I wrote this software for fun and variety and decided to publish it. Linux is fa
 
 status(){
 	
-	mariadb=`sudo systemctl status mariadb`
-	clamav=`sudo systemct, status clamav`
 	
+	# I put the database settings inside the file and I don't need to enter the user and password every time I log in to the system
+	# mysql -u root -p
+	database_check=`mysql --execute="show databases;"`
+	 zenity --list \
+		 --column "databases" \
+		 --width 900 \
+		 --height 500 \
+		#$database_check
 
 }
 
@@ -37,10 +43,21 @@ insert_data(){
 
 	zenity --forms \
 	       --text "Welcome to signup wizard" \
+	       --height 500 \
+	       --width 900 \
 	       --add-entry "Enter the first name" \
 	       --add-entry "Enter the last name" \
-	       --add-entry "Enter login name" \
+	       --add-entry "Enter Department" \
 	       --add-password "Enter UserID"
+
+	musql --execute="use test_data;INSERT INTO userinfo (\`First_Name\`, \`Last_Name\`, \`Department\`, \`UserID\`) "
+
+	zenity --info \
+	       --title "MariaDB Message" \
+	       --width 500 \
+	       --height 100 \
+	       --text "Data Inserted successfully."
+
 }
 
 
@@ -54,8 +71,7 @@ login(){
 	password=`echo $userinfo | cut -d "|" -f2`
 
 	if [ "$username" == "koosha" ] && [ "$password" == "102030" ];then
-
-		form
+		insert_data
 	else
 
 		zenity --error \
@@ -69,8 +85,16 @@ fi
 
 }
 
+public_error(){
+
+		zenity --error \
+		       --title "Error Message" \
+		       --width 800 \
+		       --height 100 \
+		       --text "Permission denied. UserName or Password is Invalid"
 
 
 
+}
 
 
