@@ -1,0 +1,76 @@
+#!/bin/bash
+
+
+
+
+
+info(){
+
+
+zenity --info \
+       --title "KYGnus Info" \
+       --width 900 \
+       --height 100 \
+       --text """																KYGnus
+									
+Hobbit Archive
+
+
+I wrote this software for fun and variety and decided to publish it. Linux is fast, Linux is strong, and Linux is one of the symbols of freedom. According to Richard Stallman, Linux is a big hack and it clearly shows the logic and thinking of the people behind this issue. In order to attract more people and introduce them to the idea of the logic and complexity of Linux, I decided to create a graphic information archive program. I will write and show that it is very easy and simple to make a simple product in Linux. For those who use an operating system other than the Unix family, I recommend paying attention to the size of the file!!!	
+"""
+
+
+
+
+}
+
+
+status(){
+	
+	mariadb=`sudo systemctl status mariadb`
+	clamav=`sudo systemct, status clamav`
+	
+
+}
+
+insert_data(){
+
+	zenity --forms \
+	       --text "Welcome to signup wizard" \
+	       --add-entry "Enter the first name" \
+	       --add-entry "Enter the last name" \
+	       --add-entry "Enter login name" \
+	       --add-password "Enter UserID"
+}
+
+
+
+
+login(){
+
+
+	userinfo=`zenity --username --password`
+	username=`echo $userinfo | cut -d "|" -f1`
+	password=`echo $userinfo | cut -d "|" -f2`
+
+	if [ "$username" == "koosha" ] && [ "$password" == "102030" ];then
+
+		form
+	else
+
+		zenity --error \
+		       --title "Error Message" \
+		       --width 800 \
+		       --height 100 \
+		       --text "Permission denied. UserName or Password is Invalid"
+		exit 0
+fi
+
+
+}
+
+
+
+
+
+
