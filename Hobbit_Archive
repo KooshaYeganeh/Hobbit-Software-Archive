@@ -19,7 +19,7 @@ I wrote this software for fun and variety and decided to publish it. Linux is fa
 
 Developer : Koosha Yeganeh
 
-Github : https://github.com/KooshaYeganeh
+GitHub : https://github.com/KooshaYeganeh
 
 'Special thanks to Richard Stallman and Linus Torvalds and Jadi. 3 influential men for me'
 
@@ -148,7 +148,7 @@ insert_data(){
 
 show_data(){
 	
-	table_data=`mysql --execute="use test_data ; SEELCT * FROM userinfo; "`
+	table_data=`mysql --execute="use test_data ; SELECT * FROM userinfo; "`
 	zenity --list \
 	      --column "First Name" \
 	      --column "Last Name" \
