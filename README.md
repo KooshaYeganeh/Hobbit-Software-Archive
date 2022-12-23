@@ -37,6 +37,18 @@ sudo apt install zenity
 sudo zypper install zenity
 ```
 
+**MariaDB config**
+*I added the user and password to the MariaDB settings file and you can add these settings according to your Linux distribution.*
+
+
+```
+mysql --execute="CREATE DATABASE test_data;use test_data;\
+CREATE TABLE userinfo ( First_Name VARCHAR (100) , Last_Name VARCHAR(100) , Department VARCHAR (200) , UserID VARCHAR(200));"
+
+```
+
+
+
 **Install App**
 
 ```
