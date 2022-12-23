@@ -3,62 +3,198 @@
 
 
 
-
 info(){
 
 
 zenity --info \
        --title "KYGnus Info" \
-       --width 900 \
-       --height 100 \
-       --text """																KYGnus
+       --width 1000 \
+       --height 600 \
+       --text """																KYGnus 
 									
 Hobbit Archive
 
 
-I wrote this software for fun and variety and decided to publish it. Linux is fast, Linux is strong, and Linux is one of the symbols of freedom. According to Richard Stallman, Linux is a big hack and it clearly shows the logic and thinking of the people behind this issue. In order to attract more people and introduce them to the idea of the logic and complexity of Linux, I decided to create a graphic information archive program. I will write and show that it is very easy and simple to make a simple product in Linux. For those who use an operating system other than the Unix family, I recommend paying attention to the size of the file!!!	
+I wrote this software for fun and variety and decided to publish it. Linux is fast, Linux is strong, and Linux is one of the symbols of freedom. According to Richard Stallman, Linux is a big hack and it clearly shows the logic and thinking of the people behind this issue. In order to attract more people and introduce them to the idea of the logic and complexity of Linux, I decided to create a graphic information archive program. I will write and show that it is very easy and simple to make a simple product in Linux. For those who use an operating system other than the Unix family, I recommend paying attention to the size of the file!!!
+
+Developer : Koosha Yeganeh
+
+Github : https://github.com/KooshaYeganeh
+
+'Special thanks to Richard Stallman and Linus Torvalds and Jadi. 3 influential men for me'
+
 """
 
 
-
+menu
 
 }
 
 
-status(){
+system_status(){
+
+	etc=`cat /etc/os-release`
+	zenity --list \
+	       --column "System Info" \
+	       --width 900 \
+	       --height 500 \
+	       $etc 
+
+       menu	
+
+}
+
+
+
+dbstatus(){
 	
 	
 	# I put the database settings inside the file and I don't need to enter the user and password every time I log in to the system
 	# mysql -u root -p
-	database_check=`mysql --execute="show databases;"`
-	 zenity --list \
-		 --column "databases" \
-		 --width 900 \
-		 --height 500 \
-		#$database_check
+	database_check=`mysql --execute="show databases;" | grep test_data`
+	databases=`mysql --execute="show databases;"`
+	sum=`mysql --execute="use test_data ; select count(*) AS TotalRows from userinfo;"`
+	zero=`echo $sum | cut -d" " -f2`
+	
+	if [ "$database_check" == "test_data" ];then
+		if [ "$zero" == "0" ];then
+			zenity --list \
+				--column "All Databases in System" \
+				--column "Number of Records userinfo" \
+				 --width 900 \
+				 --height 500 \
+				 $databases \
+				 $zero
+		else
+			zenity --list \
+				--column "All Databases in System" \
+				--column "Number of Records userinfo" \
+				 --width 900 \
+				 --height 500 \
+				 $databases \
+				 $sum
+
+		fi
+
+		 
+	else
+		new_database="Database Created"
+		new_table="Table Created"	
+		create_database=`mysql --execute="CREATE DATABASE test_data;use test_data;CREATE TABLE userinfo ( First_Name VARCHAR (100) , Last_Name VARCHAR(100) , Department VARCHAR (200) , UserID VARCHAR(200));"`
+		zenity --list \
+			--column "All Databases in System" \
+			--column "Number of Databases" \
+			 --width 900 \
+			 --height 500 \
+			 $new_database
+			 $new_table
+	fi
+	
+		
+
+	menu
+			 
 
 }
 
 insert_data(){
 
-	zenity --forms \
+	all_info=`zenity --forms \
 	       --text "Welcome to signup wizard" \
 	       --height 500 \
 	       --width 900 \
 	       --add-entry "Enter the first name" \
 	       --add-entry "Enter the last name" \
 	       --add-entry "Enter Department" \
-	       --add-password "Enter UserID"
+	       --add-password "Enter UserID"`
 
-	musql --execute="use test_data;INSERT INTO userinfo (\`First_Name\`, \`Last_Name\`, \`Department\`, \`UserID\`) "
+	fname=`echo $all_info | cut -d '|' -f1`
+	lname=`echo $all_info | cut -d '|' -f2`
+	dep=`echo $all_info | cut -d '|' -f3`
+	pass=`echo $all_info | cut -d '|' -f4`
 
-	zenity --info \
-	       --title "MariaDB Message" \
-	       --width 500 \
-	       --height 100 \
-	       --text "Data Inserted successfully."
+	# mysql --execute="use test_data;CREATE TABLE userinfo ( First_Name VARCHAR (100) , Last_Name VARCHAR(100) , Department VARCHAR (200) , UserID VARCHAR(200));"
+	
+	start_sum=`mysql --execute="use test_data ; select count(*) AS TotalRows from userinfo;" | cut -d" " -f2`
+	mysql --execute="use test_data;INSERT INTO userinfo (\`First_Name\`, \`Last_Name\`, \`Department\`, \`UserID\`) VALUES ('$fname','$lname','$dep','$pass')"
+	end_sum=`mysql --execute="use test_data ; select count(*) AS TotalRows from userinfo;" | cut -d" " -f2`
+	files=`zenity --file-selection \
+		--title "Select Files" \
+		--filename "/home/${USER}/" \
+		--multiple`
 
+	# mkdir /tmp/test_data
+	cp "$files" /tmp/Hobbit_Archive
+
+	if [ "$end_sum" -gt "$start_sum" ];then 
+
+		zenity --info \
+		       --title "MariaDB Message" \
+		       --width 500 \
+		       --height 100 \
+		       --text "Data Inserted successfully to Databasse & File Save Succesfully."
+	else
+		zenity --error \
+		       --title "MariaDB Message" \
+		       --width 500 \
+		       --height 100 \
+		       --text "Error Occur Whem Inserting Data !!!"
+	fi
+
+	menu
 }
+
+
+
+show_data(){
+	
+	table_data=`mysql --execute="use test_data ; SEELCT * FROM userinfo; "`
+	zenity --list \
+	      --column "First Name" \
+	      --column "Last Name" \
+	      --column "Department" \
+	      --column "UserID" \
+	      --width 900 \
+	      --height 500
+		$table_data
+	
+	menu
+}
+
+
+
+menu(){
+	choice=`zenity --info --title 'KYGnus' \
+		--text 'Hobbit Archive Menu' \
+		--ok-label OK \
+		--extra-button InsertDATA \
+		--extra-button Show_Records \
+		--extra-button DBstatus \
+		--extra-button SystemInfo \
+		--extra-button Info \
+		--extra-button Exit \
+		--width 600 \
+		--height 100`
+
+	if [ "$choice" == InsertDATA ];then
+		insert_data
+	elif [ "$choice" == Show_Records ];then
+		show_data
+	elif [ "$choice" == DBstatus ];then
+		dbstatus
+	elif [ "$choice" == Exit ];then
+		exit 0
+	elif [ "$choice" == SystemInfo ];then
+		system_status
+	elif [ "$choice" == Info ];then
+		info
+	else
+		menu
+	fi
+}
+
+
+
 
 
 
@@ -71,30 +207,23 @@ login(){
 	password=`echo $userinfo | cut -d "|" -f2`
 
 	if [ "$username" == "koosha" ] && [ "$password" == "102030" ];then
-		insert_data
+		dir="/tmp/Hobbit_Archive"
+		if [ -d "$dir" ];then
+			true
+		else
+			mkdir /tmp/Hobbit_Archive
+		fi
+		menu
 	else
-
 		zenity --error \
 		       --title "Error Message" \
 		       --width 800 \
 		       --height 100 \
 		       --text "Permission denied. UserName or Password is Invalid"
 		exit 0
-fi
+	fi
 
 
 }
 
-public_error(){
-
-		zenity --error \
-		       --title "Error Message" \
-		       --width 800 \
-		       --height 100 \
-		       --text "Permission denied. UserName or Password is Invalid"
-
-
-
-}
-
-
+login
