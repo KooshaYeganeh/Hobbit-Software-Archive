@@ -82,4 +82,6 @@ Hobbit_Archive
 ```
 sudo rm /usr/bin/Hobbit_Archive
 ```
-
+```
+mysql --execute="DROP DATABASE test_data;"
+```
